@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг»
 
-* Студент: [Ильнар Шангареев](https://up.htmlacademy.ru/javascript/22/user/1005163).
-* Наставник: `Неизвестно`.
+- Студент: [Ильнар Шангареев](https://up.htmlacademy.ru/javascript/22/user/1005163).
+- Наставник: [Евгений Мамичев](https://htmlacademy.ru/profile/id1280971).
 
 ---
 
