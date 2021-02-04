@@ -1,10 +1,13 @@
-// function getRandomArbitrary(min, max) {
-//   return Math.random() * (max - min) + min;
-// }
-// alert(getRandomArbitrary(-3, 10));
+let simbolsAfterComma;
 
-function random(min, max) {
-  return Math.abs(min + Math.random().toFixed(1) * (max - min));
+function random(min, max, simbolsAfterComma) {
+  if (min > max) {
+    console.log("Значение от не может быть больше чем до");
+  } else {
+    return Math.abs(min + Math.random() * (max - min)).toFixed(
+      simbolsAfterComma
+    );
+  }
 }
 
-alert(random(-2, 0));
+console.log(random(2, 5, 1));
