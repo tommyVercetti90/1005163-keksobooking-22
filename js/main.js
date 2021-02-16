@@ -84,4 +84,4 @@ for (let i = 0; i < 10; i++) {
   allAds[i] = generateAds();
 }
 
-console.log(allAds);
+// console.log(allAds);
