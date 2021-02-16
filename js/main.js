@@ -29,6 +29,14 @@ const getRandomArrayElement = (elements) => {
   return elements[random(0, elements.length - 1, 0)];
 };
 
+// функция создающая массив произвольной длинный
+
+function getArrayLength(array) {
+  let clone = array.slice();
+  clone.length = random(1, array.length, 0);
+  return clone;
+}
+
 // генератор рандомного типа апартаментов
 const randomPlaces = () => {
   return getRandomArrayElement(PLACES);
@@ -37,36 +45,6 @@ const randomPlaces = () => {
 // генератор рандомного время заселения
 const randomCheckinTime = () => {
   return getRandomArrayElement(CHECKINTIME);
-};
-
-// генератор рандомной опции
-const randomFeatures = () => {
-  return getRandomArrayElement(FEATURES);
-};
-
-// генератор рандомной фотки
-const randomPhoto = () => {
-  return getRandomArrayElement(PHOTOS);
-};
-
-// Генерим рандомный массив опций
-
-const randomArrFeatures = () => {
-  let arr = new Array();
-  for (let i = 0; i <= random(0, FEATURES.length, 0); i++) {
-    arr[i] = randomFeatures();
-  }
-  return arr;
-};
-
-// Генерим рандомный массив с фото
-
-const randomArrPhotos = () => {
-  let arr = new Array();
-  for (let i = 0; i <= random(0, PHOTOS.length, 0); i++) {
-    arr[i] = randomPhoto();
-  }
-  return arr;
 };
 
 // функция создания обьявления
@@ -78,16 +56,16 @@ function generateAds() {
 
     offer: {
       title: "Offer__title",
-      address: "location.x" + "loaction.y",
+      address: "location.x" + ", " + "loaction.y",
       price: random(100, 1000, 0),
       type: randomPlaces(),
       rooms: random(1, 10, 0),
       guests: random(1, 50, 0),
       checkin: randomCheckinTime(),
       checkout: randomCheckinTime(),
-      features: randomArrFeatures(),
+      features: getArrayLength(FEATURES),
       description: "some-info",
-      photos: randomArrPhotos(),
+      photos: getArrayLength(PHOTOS),
     },
 
     location: {
@@ -106,4 +84,4 @@ for (let i = 0; i < 10; i++) {
   allAds[i] = generateAds();
 }
 
-// console.log(allAds);
+console.log(allAds);
