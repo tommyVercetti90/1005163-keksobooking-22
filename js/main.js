@@ -15,8 +15,10 @@ const PHOTOS = [
   "http://o0.github.io/assets/images/tokyo/hotel3.jpg",
 ];
 
+let countAds = 10;
+
 // генератор случайных чисел
-function random(min, max, fraction) {
+function getRandomNum(min, max, fraction) {
   if (min > max) {
     alert("Значение Oт не может быть больше чем До");
   } else {
@@ -24,64 +26,66 @@ function random(min, max, fraction) {
   }
 }
 
-// поиск рандомного элемента массива
+// генератор рандомного элемента массива
 const getRandomArrayElement = (elements) => {
-  return elements[random(0, elements.length - 1, 0)];
+  return elements[getRandomNum(0, elements.length - 1, 0)];
 };
 
 // функция создающая массив произвольной длинный
 
-function getArrayLength(array) {
+function getArrayWithRandomLength(array) {
   let clone = array.slice();
-  clone.length = random(1, array.length, 0);
+  clone.length = getRandomNum(1, array.length, 0);
   return clone;
 }
 
 // генератор рандомного типа апартаментов
-const randomPlaces = () => {
+const getRandomPlaces = () => {
   return getRandomArrayElement(PLACES);
 };
 
 // генератор рандомного время заселения
-const randomCheckinTime = () => {
+const getRandomCheckinTime = () => {
   return getRandomArrayElement(CHECKINTIME);
 };
 
 // функция создания обьявления
 function generateAds() {
-  let adverts = {
+  adverts = {
     author: {
-      avatar: "img/avatars/user" + "0" + random(0, 8, 0) + ".png",
+      avatar: "img/avatars/user" + "0" + getRandomNum(0, 8, 0) + ".png",
     },
 
     offer: {
       title: "Offer__title",
       address: "location.x" + ", " + "loaction.y",
-      price: random(100, 1000, 0),
-      type: randomPlaces(),
-      rooms: random(1, 10, 0),
-      guests: random(1, 50, 0),
-      checkin: randomCheckinTime(),
-      checkout: randomCheckinTime(),
-      features: getArrayLength(FEATURES),
+      price: getRandomNum(100, 1000, 0),
+      type: getRandomPlaces(),
+      rooms: getRandomNum(1, 10, 0),
+      guests: getRandomNum(1, 50, 0),
+      checkin: getRandomCheckinTime(),
+      checkout: getRandomCheckinTime(),
+      features: getArrayWithRandomLength(FEATURES),
       description: "some-info",
-      photos: getArrayLength(PHOTOS),
+      photos: getArrayWithRandomLength(PHOTOS),
     },
 
     location: {
-      x: random(35.65, 35.7, 5),
-      y: random(139.7, 139.8, 5),
+      x: getRandomNum(35.65, 35.7, 5),
+      y: getRandomNum(139.7, 139.8, 5),
     },
   };
   return adverts;
 }
 
-// генерим 10 случайных обьявлений и записываем их в массив
+// Функция возвращающаая массив объектов объявлений
 
-let allAds = [];
-
-for (let i = 0; i < 10; i++) {
-  allAds[i] = generateAds();
+function generateArrAds() {
+  let allAds = [];
+  for (let i = 0; i < countAds; i++) {
+    allAds.push(generateAds());
+  }
+  return allAds;
 }
 
-// console.log(allAds);
+// console.log(generateArrAds());
