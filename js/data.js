@@ -8,10 +8,10 @@ import {
   getTranslateType,
   getGuestsAndRooms,
   getRegistrationTime,
-  createFeature,
   getFeatures,
   getPhotos,
-} from "./util.js";
+  removeChildren
+} from './util.js';
 
 let countAds = 1;
 
@@ -19,12 +19,12 @@ let countAds = 1;
 function generateAds() {
   const adverts = {
     author: {
-      avatar: "img/avatars/user" + "0" + getRandomNum(0, 8, 0) + ".png",
+      avatar: 'img/avatars/user' + '0' + getRandomNum(0, 8, 0) + '.png',
     },
 
     offer: {
-      title: "Offer__title",
-      address: "location.x" + ", " + "loaction.y",
+      title: 'Offer__title',
+      address: 'location.x' + ', ' + 'loaction.y',
       price: getRandomNum(100, 1000, 0),
       type: getRandomPlaces(),
       rooms: getRandomNum(1, 10, 0),
@@ -32,7 +32,7 @@ function generateAds() {
       checkin: getRandomCheckinTime(),
       checkout: getRandomCheckinTime(),
       features: getArrayWithRandomLength(FEATURES),
-      description: "some-info",
+      description: 'some-info',
       photos: getArrayWithRandomLength(PHOTOS),
     },
 
@@ -55,45 +55,41 @@ function generateArrAds() {
 
 // Генерируем шаблон объявления
 function generateOffer(advertisement) {
-  var offer = advertisement.offer;
-  var author = advertisement.author;
-  var offerDialog = document.querySelector("#card"); // Берем элемент, в который будем вставлять наш шаблон
-  var adsList = offerDialog.content.cloneNode(true);
+  const offer = advertisement.offer;
+  const author = advertisement.author;
+  const offerDialog = document.querySelector('#card'); // Берем элемент, в который будем вставлять наш шаблон
+  const adsList = offerDialog.content.cloneNode(true);
+  const userAds = adsList.querySelector('.popup'); // Берем элемент, в который будем вставлять текст объявления
+  const userAvatar = userAds.querySelector('.popup__avatar');
+  const featuresNode = userAds.querySelector('.popup__features');
+  const flatPhotos = userAds.querySelector('.popup__photos');
+  const adTitle = adsList.querySelector('.popup__title');
+  const flatAddress = adsList.querySelector('.popup__text--address');
+  const flatPrice = adsList.querySelector('.popup__text--price');
+  const flatType = adsList.querySelector('.popup__type');
+  const flatCapacity = adsList.querySelector('.popup__text--capacity');
+  const regestrationTime = adsList.querySelector('.popup__text--time');
+  const flatDescription = adsList.querySelector('.popup__description');
 
-  var userAds = adsList.querySelector(".popup"); // Берем элемент, в который будем вставлять текст объявления
-  var userAvatar = userAds.querySelector(".popup__avatar");
-  var featuresNode = userAds.querySelector(".popup__features");
-  var popupPhotos = userAds.querySelector(".popup__photos");
-
-  adsList.querySelector(".popup__title").textContent = offer.title;
-  adsList.querySelector(".popup__text--address").textContent = offer.adress;
-  adsList.querySelector(".popup__text--price").innerHTML =
-    offer.price + " &#x20bd;/ночь";
-  adsList.querySelector(".popup__type").textContent = getTranslateType(
-    offer.type
-  );
-  adsList.querySelector(
-    ".popup__text--capacity"
-  ).textContent = getGuestsAndRooms(offer.rooms, offer.guests);
-  adsList.querySelector(".popup__text--time").textContent = getRegistrationTime(
+  adTitle.textContent = offer.title;
+  flatAddress.textContent = offer.adrflat;
+  flatPrice.innerHTML = offer.price + ' &#x20bd;/ночь';
+  flatType.textContent = getTranslateType(offer.type);
+  flatCapacity.textContent = getGuestsAndRooms(offer.rooms, offer.guests);
+  regestrationTime.textContent = getRegistrationTime(
     offer.checkin,
-    offer.checkout
+    offer.checkout,
   );
 
-  // удаляем features по умолчанию из разметки
-  while (featuresNode.firstChild) {
-    featuresNode.removeChild(featuresNode.firstChild);
-  }
+  // удаляем детей popup__features
+  removeChildren(featuresNode);
 
   // добавляем сгенерированые преимущества в разметку
-  adsList
-    .querySelector(".popup__features")
-    .appendChild(getFeatures(offer.features));
+  featuresNode.appendChild(getFeatures(offer.features));
+  flatDescription.textContent = offer.description;
 
-  adsList.querySelector(".popup__description").textContent = offer.description;
-
-  popupPhotos.removeChild(adsList.querySelector(".popup__photo")); //удаляем пустую фотку из разметки
-  adsList.querySelector(".popup__photos").appendChild(getPhotos(offer.photos)); // добавляем массив фотографий в размтеку
+  flatPhotos.removeChild(adsList.querySelector('.popup__photo')); //удаляем пустую фотку из разметки
+  flatPhotos.appendChild(getPhotos(offer.photos)); // добавляем массив фотографий в размтеку
 
   userAvatar.src = author.avatar;
   return adsList;
