@@ -7,7 +7,7 @@ const checkOutTime = offerForm.querySelector('#timeout');
 // Функция замены цены в placeholder
 function changePrice() {
   function changeAttributePrice(price) {
-    offerPrice.placeholder = price.toString();
+    offerPrice.setAttribute('placeholder', price.toString());
     offerPrice.setAttribute('min', price);
   }
 
