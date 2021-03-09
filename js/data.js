@@ -13,7 +13,7 @@ import {
   removeChildren
 } from './util.js';
 
-let countAds = 1;
+let countAds = 10;
 
 // функция создания обьявления
 function generateAds() {
