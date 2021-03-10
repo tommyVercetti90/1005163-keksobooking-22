@@ -54,45 +54,41 @@ function generateArrAds() {
 }
 
 // Генерируем шаблон объявления
-function generateOffer(advertisement) {
-  const offer = advertisement.offer;
-  const author = advertisement.author;
-  const offerDialog = document.querySelector('#card'); // Берем элемент, в который будем вставлять наш шаблон
-  const adsList = offerDialog.content.cloneNode(true);
-  const userAds = adsList.querySelector('.popup'); // Берем элемент, в который будем вставлять текст объявления
-  const userAvatar = userAds.querySelector('.popup__avatar');
-  const featuresNode = userAds.querySelector('.popup__features');
-  const flatPhotos = userAds.querySelector('.popup__photos');
-  const adTitle = adsList.querySelector('.popup__title');
-  const flatAddress = adsList.querySelector('.popup__text--address');
-  const flatPrice = adsList.querySelector('.popup__text--price');
-  const flatType = adsList.querySelector('.popup__type');
-  const flatCapacity = adsList.querySelector('.popup__text--capacity');
-  const regestrationTime = adsList.querySelector('.popup__text--time');
-  const flatDescription = adsList.querySelector('.popup__description');
+const cardTemplate = document
+  .querySelector('#card')
+  .content.querySelector('.popup');
 
-  adTitle.textContent = offer.title;
-  flatAddress.textContent = offer.adrflat;
-  flatPrice.innerHTML = offer.price + ' &#x20bd;/ночь';
-  flatType.textContent = getTranslateType(offer.type);
-  flatCapacity.textContent = getGuestsAndRooms(offer.rooms, offer.guests);
-  regestrationTime.textContent = getRegistrationTime(
-    offer.checkin,
-    offer.checkout,
+const generateOffer = function ({ author, offer }) {
+  const similarPopup = cardTemplate.cloneNode(true);
+  const flatFeatures = similarPopup.querySelector('.popup__features');
+
+  similarPopup.querySelector('.popup__title').textContent = offer.title;
+  similarPopup.querySelector('.popup__text--address').textContent =
+    offer.address;
+  similarPopup.querySelector(
+    '.popup__text--price',
+  ).textContent = `${offer.price} ₽/ночь`;
+  similarPopup.querySelector('.popup__type').textContent = getTranslateType(
+    offer.type,
   );
+  similarPopup.querySelector(
+    '.popup__text--capacity',
+  ).textContent = getGuestsAndRooms(offer.rooms, offer.guests);
+  similarPopup.querySelector(
+    '.popup__text--time',
+  ).textContent = getRegistrationTime(offer.checkin, offer.checkout);
+  removeChildren(flatFeatures);
+  flatFeatures.appendChild(getFeatures(offer.features));
 
-  // удаляем детей popup__features
-  removeChildren(featuresNode);
+  similarPopup.querySelector('.popup__description').textContent =
+    offer.description;
+  similarPopup.querySelector('.popup__photos').innerHTML = '';
+  similarPopup
+    .querySelector('.popup__photos')
+    .appendChild(getPhotos(offer.photos));
+  similarPopup.querySelector('.popup__avatar').src = author.avatar;
 
-  // добавляем сгенерированые преимущества в разметку
-  featuresNode.appendChild(getFeatures(offer.features));
-  flatDescription.textContent = offer.description;
-
-  flatPhotos.removeChild(adsList.querySelector('.popup__photo')); //удаляем пустую фотку из разметки
-  flatPhotos.appendChild(getPhotos(offer.photos)); // добавляем массив фотографий в размтеку
-
-  userAvatar.src = author.avatar;
-  return adsList;
-}
+  return similarPopup;
+};
 
 export { generateArrAds, generateOffer };

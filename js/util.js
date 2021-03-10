@@ -119,11 +119,6 @@ function removeChildren(child) {
   }
 }
 
-// удаляем features по умолчанию из разметки
-// while (featuresNode.firstChild) {
-//   featuresNode.removeChild(featuresNode.firstChild);
-// }
-
 export {
   getRandomNum,
   getArrayWithRandomLength,

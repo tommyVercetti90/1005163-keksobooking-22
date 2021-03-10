@@ -6,18 +6,17 @@ let mapFormElements = mapForm.querySelectorAll('fieldset');
 let mapFilterElements = mapFilters.querySelectorAll('select');
 let mapFilterFeatures = mapFilters.querySelector('.map__features');
 let formAdress = document.querySelector('#address');
-let mapPoints = generateArrAds();
 
 // Меняем свойства главного маркера
 let mainMapMarker = L.icon({
-  iconUrl: '../img/main-pin.svg',
+  iconUrl: 'img/main-pin.svg',
   iconSize: [38, 95],
   iconAnchor: [22, 94],
 });
 
 //  Меняем свойства обычного маркера
 let regularMapMarker = L.icon({
-  iconUrl: '../img/pin.svg',
+  iconUrl: 'img/pin.svg',
   iconSize: [38, 95],
   iconAnchor: [22, 94],
 });
@@ -102,23 +101,24 @@ formAdress.onfocus = function () {
 // Добавляем главную метку на карту
 mainMarker.addTo(map);
 
-// цикл который создает и добавляет метки на карту
-function getMapPins() {
-  for (let i = 0; i < mapPoints.length; i++) {
-    const offer = generateOffer(mapPoints[i]);
-    const marker = L.marker(
-      {
-        lat: mapPoints[i].location.x,
-        lng: mapPoints[i].location.y,
-      },
-      { icon: regularMapMarker },
-    );
+let mapPoints = generateArrAds();
 
-    marker.addTo(map).bindPopup(offer),
-    {
-      keepInView: true,
-    };
-  }
+// функция создает и добавляет метки на карту
+function markerMaker() {
+  mapPoints.forEach(function ({ author, offer, location }) {
+    const regularMarker = L.marker(
+      {
+        lat: location.x,
+        lng: location.y,
+      },
+      {
+        icon: regularMapMarker,
+      },
+    );
+    regularMarker
+      .addTo(map)
+      .bindPopup(generateOffer({ author, offer }), { keepInView: true });
+  });
 }
 
-export { mapBlock, mapUnBlock, getMapPins };
+export { mapBlock, mapUnBlock, markerMaker };
