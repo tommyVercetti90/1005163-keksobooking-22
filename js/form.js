@@ -100,26 +100,25 @@ function filterChangeHandler() {
 }
 
 function formRoomsChangeHandler(roomNumberSelect) {
-  const roomNumber = Number(
-    roomNumberSelect.options[roomNumberSelect.selectedIndex].value,
-  );
+  const roomNumber = Number(roomNumberSelect.value);
   const capacitySelect = document.querySelector('#capacity');
   const capacitySelectOptions = capacitySelect.querySelectorAll('option');
 
-  capacitySelectOptions.forEach((formElement) => {
-    const formElementValue = Number(formElement.value);
-    if (formElementValue === 0 && roomNumber === 100) {
-      formElement.removeAttribute('disabled');
+  capacitySelectOptions.forEach((option) => {
+    const optionValue = Number(option.value);
+    if (optionValue === 0 && roomNumber === 100) {
+      option.removeAttribute('disabled');
     } else if (
-      formElementValue <= roomNumber &&
-      formElementValue !== 0 &&
+      optionValue <= roomNumber &&
+      optionValue !== 0 &&
       roomNumber !== 100
     ) {
-      formElement.removeAttribute('disabled');
+      option.removeAttribute('disabled');
     } else {
-      formElement.setAttribute('disabled', 'disabled');
+      option.setAttribute('disabled', true);
     }
   });
+  console.log(capacitySelectOptions);
 }
 
 function checkRooms() {
