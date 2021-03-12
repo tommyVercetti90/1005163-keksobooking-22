@@ -118,7 +118,6 @@ function formRoomsChangeHandler(roomNumberSelect) {
       option.setAttribute('disabled', true);
     }
   });
-  console.log(capacitySelectOptions);
 }
 
 function checkRooms() {
