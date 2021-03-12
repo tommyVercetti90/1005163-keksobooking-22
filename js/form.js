@@ -77,36 +77,70 @@ function syncCheckTime() {
   checkOutTime.addEventListener('change', syncCheckOutTime);
 }
 
-offerRooms.addEventListener('change', function (evt) {
-  switch (evt.target.value) {
-    case '1':
-      syncFields(offerCapacityCount, 1);
-      break;
-    case '0':
-      syncFields(offerCapacityCount, 0);
-      break;
-    default:
-      syncFields(offerCapacityCount, 0);
-      break;
-  }
-});
-
-offerCapacityCount.addEventListener('change', function (evt) {
-  switch (evt.target.value) {
-    case '1':
-      syncFields(offerRooms, 1);
-      break;
-    case '0':
-      syncFields(offerRooms, 0);
-      break;
-    default:
-      syncFields(offerRooms, 0);
-      break;
-  }
-});
-
-function syncFields(field, syncField) {
-  field.value = syncField.toString();
+// Действия на изменения количества комнат
+function adFormHandler(form) {
+  formRoomsChangeHandler(document.querySelector('#room_number'));
+  form.addEventListener('change', filterChangeHandler());
+  offerRooms.addEventListener('input', checkRooms);
+  offerCapacityCount.addEventListener('input', checkRooms);
 }
 
-export { changePrice, syncCheckTime };
+function filterChangeHandler() {
+  return (evt) => {
+    if (evt.target) {
+      switch (evt.target.id) {
+        case 'room_number':
+          formRoomsChangeHandler(evt.target);
+          break;
+        default:
+          break;
+      }
+    }
+  };
+}
+
+function formRoomsChangeHandler(roomNumberSelect) {
+  const roomNumber = Number(
+    roomNumberSelect.options[roomNumberSelect.selectedIndex].value,
+  );
+  const capacitySelect = document.querySelector('#capacity');
+  const capacitySelectOptions = capacitySelect.querySelectorAll('option');
+
+  capacitySelectOptions.forEach((formElement) => {
+    const formElementValue = Number(formElement.value);
+    if (formElementValue === 0 && roomNumber === 100) {
+      formElement.removeAttribute('disabled');
+    } else if (
+      formElementValue <= roomNumber &&
+      formElementValue !== 0 &&
+      roomNumber !== 100
+    ) {
+      formElement.removeAttribute('disabled');
+    } else {
+      formElement.setAttribute('disabled', 'disabled');
+    }
+  });
+}
+
+function checkRooms() {
+  const rooms = Number(offerRooms.value);
+  const places = Number(offerCapacityCount.value);
+
+  if (rooms === 100 && places !== 0) {
+    offerCapacityCount.setCustomValidity(
+      'Нужно выбрать количество мест: не для гостей',
+    );
+  } else if (rooms !== 100 && places === 0) {
+    offerCapacityCount.setCustomValidity(
+      'Нужно выбрать количество мест в соответствии количеству комнат',
+    );
+  } else if (rooms < places && places !== 0) {
+    offerCapacityCount.setCustomValidity(
+      'Нужно выбрать количество мест в соответствии количеству комнат',
+    );
+  } else {
+    offerCapacityCount.setCustomValidity('');
+  }
+}
+
+export { changePrice, syncCheckTime, adFormHandler };
