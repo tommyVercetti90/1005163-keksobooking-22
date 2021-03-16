@@ -1,4 +1,4 @@
-import { generateArrAds, generateOffer } from './data.js';
+import { generateOffer } from './data.js';
 
 let mapForm = document.querySelector('.ad-form');
 let mapFilters = document.querySelector('.map__filters');
@@ -101,15 +101,15 @@ formAdress.onfocus = function () {
 // Добавляем главную метку на карту
 mainMarker.addTo(map);
 
-let mapPoints = generateArrAds();
+// let mapPoints = generateArrAds();
 
 // функция создает и добавляет метки на карту
-function markerMaker() {
+const markerMaker = (mapPoints) => {
   mapPoints.forEach(function ({ author, offer, location }) {
     const regularMarker = L.marker(
       {
-        lat: location.x,
-        lng: location.y,
+        lat: location.lat,
+        lng: location.lng,
       },
       {
         icon: regularMapMarker,
@@ -119,6 +119,37 @@ function markerMaker() {
       .addTo(map)
       .bindPopup(generateOffer({ author, offer }), { keepInView: true });
   });
-}
+};
+
+const ALERT_SHOW_TIME = 5000;
+
+const showAlert = (message) => {
+  const alertContainer = document.createElement('div');
+  alertContainer.style.zIndex = 100;
+  alertContainer.style.position = 'absolute';
+  alertContainer.style.left = 0;
+  alertContainer.style.top = 0;
+  alertContainer.style.right = 0;
+  alertContainer.style.padding = '30px 3px';
+  alertContainer.style.fontSize = '30px';
+  alertContainer.style.textAlign = 'center';
+  alertContainer.style.backgroundColor = '#FF5454';
+  alertContainer.textContent = message;
+
+  document.body.append(alertContainer);
+
+  setTimeout(() => {
+    alertContainer.remove();
+  }, ALERT_SHOW_TIME);
+};
+
+fetch('https://22.javascript.pages.academy/keksobooking/data')
+  .then((response) => response.json())
+  .then((dataFromServer) => {
+    markerMaker(dataFromServer);
+  })
+  .catch(() => {
+    showAlert('Ошибка загрузки меток. Попробуйте ещё раз');
+  });
 
 export { mapBlock, mapUnBlock, markerMaker };

@@ -6,6 +6,16 @@ const checkOutTime = offerForm.querySelector('#timeout');
 const offerTitle = offerForm.querySelector('#title');
 const offerRooms = offerForm.querySelector('#room_number');
 const offerCapacityCount = offerForm.querySelector('#capacity');
+const templateSuccess = document
+  .querySelector('#success')
+  .content.querySelector('.success');
+const templateError = document
+  .querySelector('#error')
+  .content.querySelector('.error');
+const resetButton = offerForm.querySelector('.ad-form__reset');
+
+const mainElement = document.querySelector('main');
+
 const MIN_NAME_LENGTH = 30;
 const MAX_NAME_LENGTH = 100;
 
@@ -140,5 +150,50 @@ function checkRooms() {
     offerCapacityCount.setCustomValidity('');
   }
 }
+
+const showAlertSuccess = () => {
+  const alertSuccess = templateSuccess.cloneNode(true);
+  mainElement.appendChild(alertSuccess);
+};
+
+const showAlertError = () => {
+  const alertError = templateError.cloneNode(true);
+  mainElement.appendChild(alertError);
+};
+
+const removeMessage = () => {
+  const temporaryMessage = document.querySelector('.success');
+  temporaryMessage.remove();
+};
+
+// отправляем даннные на сервер
+offerForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
+  const formData = new FormData(evt.target);
+
+  fetch('https://22.javascript.pages.academy/keksobooking', {
+    method: 'POST',
+    body: formData,
+  })
+    .then((response) => {
+      if (response.ok) {
+        showAlertSuccess();
+        setTimeout(removeMessage, 2000);
+        resetButton.click();
+      } else {
+        showAlertError();
+      }
+    })
+    .catch(() => {
+      showAlertError();
+    });
+});
+
+// const errorMessage = document.querySelector('.error');
+// const errorButton = document.querySelector('.error__button');
+// errorButton.addEventListener('click', function (evt) {
+//   errorMessage.remove();
+// });
 
 export { changePrice, syncCheckTime, adFormHandler };
