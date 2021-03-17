@@ -1,3 +1,5 @@
+import { sendData } from './backend.js';
+
 const offerForm = document.querySelector('.ad-form');
 const propertyType = offerForm.querySelector('#type');
 const offerPrice = offerForm.querySelector('#price');
@@ -6,15 +8,8 @@ const checkOutTime = offerForm.querySelector('#timeout');
 const offerTitle = offerForm.querySelector('#title');
 const offerRooms = offerForm.querySelector('#room_number');
 const offerCapacityCount = offerForm.querySelector('#capacity');
-const templateSuccess = document
-  .querySelector('#success')
-  .content.querySelector('.success');
-const templateError = document
-  .querySelector('#error')
-  .content.querySelector('.error');
-const resetButton = offerForm.querySelector('.ad-form__reset');
 
-const mainElement = document.querySelector('main');
+const resetButton = offerForm.querySelector('.ad-form__reset');
 
 const MIN_NAME_LENGTH = 30;
 const MAX_NAME_LENGTH = 100;
@@ -151,56 +146,23 @@ function checkRooms() {
   }
 }
 
-const showAlertSuccess = () => {
-  const alertSuccess = templateSuccess.cloneNode(true);
-  mainElement.appendChild(alertSuccess);
-};
-
-const showAlertError = () => {
-  const alertError = templateError.cloneNode(true);
-  mainElement.appendChild(alertError);
-  const errorMessage = document.querySelector('.error');
-  const errorButton = document.querySelector('.error__button');
-  errorButton.addEventListener('click', function () {
-    errorMessage.remove();
-  });
-  window.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === 27) {
-      errorMessage.remove();
-    }
-  });
-  window.addEventListener('click', function () {
-    errorMessage.remove();
-  });
-};
-
+// Функция удаления уведомления после успешной отправки формы
 const removeMessage = () => {
   const temporaryMessage = document.querySelector('.success');
   temporaryMessage.remove();
 };
 
-// отправляем даннные на сервер
+// Слушатель отправки формы, при нажатии вызывает фнукцию отправки данных на сервер
 offerForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
-
   const formData = new FormData(evt.target);
-
-  fetch('https://22.javascript.pages.academy/keksobooking', {
-    method: 'POST',
-    body: formData,
-  })
-    .then((response) => {
-      if (response.ok) {
-        showAlertSuccess();
-        setTimeout(removeMessage, 2000);
-        resetButton.click();
-      } else {
-        showAlertError();
-      }
-    })
-    .catch(() => {
-      showAlertError();
-    });
+  sendData(formData);
 });
 
-export { changePrice, syncCheckTime, adFormHandler };
+export {
+  changePrice,
+  syncCheckTime,
+  adFormHandler,
+  resetButton,
+  removeMessage
+};
