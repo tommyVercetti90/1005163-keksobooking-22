@@ -159,6 +159,19 @@ const showAlertSuccess = () => {
 const showAlertError = () => {
   const alertError = templateError.cloneNode(true);
   mainElement.appendChild(alertError);
+  const errorMessage = document.querySelector('.error');
+  const errorButton = document.querySelector('.error__button');
+  errorButton.addEventListener('click', function () {
+    errorMessage.remove();
+  });
+  window.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === 27) {
+      errorMessage.remove();
+    }
+  });
+  window.addEventListener('click', function () {
+    errorMessage.remove();
+  });
 };
 
 const removeMessage = () => {
@@ -189,11 +202,5 @@ offerForm.addEventListener('submit', (evt) => {
       showAlertError();
     });
 });
-
-// const errorMessage = document.querySelector('.error');
-// const errorButton = document.querySelector('.error__button');
-// errorButton.addEventListener('click', function (evt) {
-//   errorMessage.remove();
-// });
 
 export { changePrice, syncCheckTime, adFormHandler };

@@ -101,26 +101,6 @@ formAdress.onfocus = function () {
 // Добавляем главную метку на карту
 mainMarker.addTo(map);
 
-// let mapPoints = generateArrAds();
-
-// функция создает и добавляет метки на карту
-const markerMaker = (mapPoints) => {
-  mapPoints.forEach(function ({ author, offer, location }) {
-    const regularMarker = L.marker(
-      {
-        lat: location.lat,
-        lng: location.lng,
-      },
-      {
-        icon: regularMapMarker,
-      },
-    );
-    regularMarker
-      .addTo(map)
-      .bindPopup(generateOffer({ author, offer }), { keepInView: true });
-  });
-};
-
 const ALERT_SHOW_TIME = 5000;
 
 const showAlert = (message) => {
@@ -143,13 +123,33 @@ const showAlert = (message) => {
   }, ALERT_SHOW_TIME);
 };
 
-fetch('https://22.javascript.pages.academy/keksobooking/data')
-  .then((response) => response.json())
-  .then((dataFromServer) => {
-    markerMaker(dataFromServer);
-  })
-  .catch(() => {
-    showAlert('Ошибка загрузки меток. Попробуйте ещё раз');
-  });
+// Получаем данные с сервера и добавляем метки на карту
+function getData() {
+  const markerMaker = (mapPoints) => {
+    mapPoints.forEach(function ({ author, offer, location }) {
+      const regularMarker = L.marker(
+        {
+          lat: location.lat,
+          lng: location.lng,
+        },
+        {
+          icon: regularMapMarker,
+        },
+      );
+      regularMarker
+        .addTo(map)
+        .bindPopup(generateOffer({ author, offer }), { keepInView: true });
+    });
+  };
 
-export { mapBlock, mapUnBlock, markerMaker };
+  fetch('https://22.javascript.pages.academy/keksobooking/data')
+    .then((response) => response.json())
+    .then((dataFromServer) => {
+      markerMaker(dataFromServer);
+    })
+    .catch(() => {
+      showAlert('Ошибка загрузки меток. Попробуйте ещё раз');
+    });
+}
+
+export { mapBlock, mapUnBlock, getData };
