@@ -1,4 +1,4 @@
-import { generateArrAds, generateOffer } from './data.js';
+import { generateOffer } from './data.js';
 
 let mapForm = document.querySelector('.ad-form');
 let mapFilters = document.querySelector('.map__filters');
@@ -101,15 +101,13 @@ formAdress.onfocus = function () {
 // Добавляем главную метку на карту
 mainMarker.addTo(map);
 
-let mapPoints = generateArrAds();
-
-// функция создает и добавляет метки на карту
-function markerMaker() {
+// функция добавления меток на карту
+const markerMaker = (mapPoints) => {
   mapPoints.forEach(function ({ author, offer, location }) {
     const regularMarker = L.marker(
       {
-        lat: location.x,
-        lng: location.y,
+        lat: location.lat,
+        lng: location.lng,
       },
       {
         icon: regularMapMarker,
@@ -119,6 +117,6 @@ function markerMaker() {
       .addTo(map)
       .bindPopup(generateOffer({ author, offer }), { keepInView: true });
   });
-}
+};
 
 export { mapBlock, mapUnBlock, markerMaker };
