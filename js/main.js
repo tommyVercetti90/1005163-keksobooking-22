@@ -1,7 +1,14 @@
-import { changePrice, syncCheckTime, adFormHandler } from './form.js';
+import { adFormHandler } from './form.js';
 import { getData } from './backend.js';
+import { showAlert } from './alerts.js';
+import { markerMaker } from './map.js';
 
 adFormHandler(document.querySelector('.ad-form'));
-changePrice();
-syncCheckTime();
-getData();
+
+getData()
+  .then((dataFromServer) => {
+    markerMaker(dataFromServer);
+  })
+  .catch(() => {
+    showAlert('Ошибка загрузки меток. Попробуйте ещё раз');
+  });

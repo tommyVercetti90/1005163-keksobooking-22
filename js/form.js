@@ -1,4 +1,5 @@
 import { sendData } from './backend.js';
+import { showAlertSuccess, showAlertError } from './alerts.js';
 
 const offerForm = document.querySelector('.ad-form');
 const propertyType = offerForm.querySelector('#type');
@@ -88,6 +89,8 @@ function adFormHandler(form) {
   form.addEventListener('change', filterChangeHandler());
   offerRooms.addEventListener('input', checkRooms);
   offerCapacityCount.addEventListener('input', checkRooms);
+  changePrice();
+  syncCheckTime();
 }
 
 function filterChangeHandler() {
@@ -156,7 +159,19 @@ const removeMessage = () => {
 offerForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const formData = new FormData(evt.target);
-  sendData(formData);
+  sendData(formData)
+    .then((response) => {
+      if (response.ok) {
+        showAlertSuccess();
+        setTimeout(removeMessage, 2000);
+        resetButton.click();
+      } else {
+        showAlertError();
+      }
+    })
+    .catch(() => {
+      showAlertError();
+    });
 });
 
 export {
