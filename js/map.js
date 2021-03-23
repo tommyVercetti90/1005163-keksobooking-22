@@ -101,8 +101,11 @@ formAdress.onfocus = function () {
 // Добавляем главную метку на карту
 mainMarker.addTo(map);
 
+const markerLayer = L.layerGroup().addTo(map);
+
 // функция добавления меток на карту
 const markerMaker = (mapPoints) => {
+  markerLayer.clearLayers();
   mapPoints.forEach(function ({ author, offer, location }) {
     const regularMarker = L.marker(
       {
@@ -114,9 +117,12 @@ const markerMaker = (mapPoints) => {
       },
     );
     regularMarker
-      .addTo(map)
+      .addTo(markerLayer)
       .bindPopup(generateOffer({ author, offer }), { keepInView: true });
   });
 };
+
+// Написать функцию updatemarkers
+// которая будет делать тоже самое что и markermaler? только будет вызывать в начале фильтр. Надо импортировать метод фильтров и вызвать в мапе
 
 export { mapBlock, mapUnBlock, markerMaker };
