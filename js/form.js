@@ -1,5 +1,6 @@
 import { sendData } from './backend.js';
 import { showAlertSuccess, showAlertError } from './alerts.js';
+import { toLoadPhoto } from './avatar.js';
 
 const offerForm = document.querySelector('.ad-form');
 const propertyType = offerForm.querySelector('#type');
@@ -11,6 +12,13 @@ const offerRooms = offerForm.querySelector('#room_number');
 const offerCapacityCount = offerForm.querySelector('#capacity');
 
 const resetButton = offerForm.querySelector('.ad-form__reset');
+
+const avatarChooser = document.querySelector('.ad-form-header__input');
+const previewAvatar = document.querySelector(
+  '.ad-form-header__preview__avatar',
+);
+const photoChooser = document.querySelector('.ad-form__input');
+const previewPhoto = document.querySelector('.ad-form__photo__pic');
 
 const MIN_NAME_LENGTH = 30;
 const MAX_NAME_LENGTH = 100;
@@ -155,6 +163,12 @@ const removeMessage = () => {
   temporaryMessage.remove();
 };
 
+const resetAvatar = () => {
+  previewAvatar.src = 'img/muffin-grey.svg';
+  previewPhoto.src = '';
+  previewPhoto.classList.add('visually-hidden');
+};
+
 // Слушатель отправки формы, при нажатии вызывает фнукцию отправки данных на сервер
 offerForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
@@ -165,6 +179,7 @@ offerForm.addEventListener('submit', (evt) => {
         showAlertSuccess();
         setTimeout(removeMessage, 2000);
         resetButton.click();
+        resetAvatar();
       } else {
         showAlertError();
       }
@@ -173,6 +188,13 @@ offerForm.addEventListener('submit', (evt) => {
       showAlertError();
     });
 });
+
+resetButton.addEventListener('click', () => {
+  resetAvatar();
+});
+
+toLoadPhoto(avatarChooser, previewAvatar);
+toLoadPhoto(photoChooser, previewPhoto);
 
 export {
   changePrice,
