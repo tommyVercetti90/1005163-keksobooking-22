@@ -1,17 +1,18 @@
+"use strict";
 const OFFER_PRICE_MIN = 10000;
 const OFFER_PRICE_MAX = 50000;
-const mapFilterForm = document.querySelector('.map__filters');
-const housingType = mapFilterForm.querySelector('#housing-type');
-const housingPrice = mapFilterForm.querySelector('#housing-price');
-const housingRooms = mapFilterForm.querySelector('#housing-rooms');
-const housingGuests = mapFilterForm.querySelector('#housing-guests');
+const mapFilterForm = document.querySelector(".map__filters");
+const housingType = mapFilterForm.querySelector("#housing-type");
+const housingPrice = mapFilterForm.querySelector("#housing-price");
+const housingRooms = mapFilterForm.querySelector("#housing-rooms");
+const housingGuests = mapFilterForm.querySelector("#housing-guests");
 const Default = {
-  DEFAULT_VALUE: 'any',
+  DEFAULT_VALUE: "any",
 };
 
-function adFilterFormHandler(cb) {
-  mapFilterForm.addEventListener('change', cb);
-}
+const adFilterFormHandler = (cb) => {
+  mapFilterForm.addEventListener("change", cb);
+};
 
 const filterByType = (ad) => {
   return (
@@ -22,13 +23,13 @@ const filterByType = (ad) => {
 
 const filterByPrice = (ad) => {
   switch (housingPrice.value) {
-    case 'middle':
+    case "middle":
       return (
         ad.offer.price >= OFFER_PRICE_MIN && ad.offer.price <= OFFER_PRICE_MAX
       );
-    case 'low':
+    case "low":
       return ad.offer.price < OFFER_PRICE_MIN;
-    case 'high':
+    case "high":
       return ad.offer.price > OFFER_PRICE_MAX;
     default:
       return true;
@@ -38,21 +39,21 @@ const filterByPrice = (ad) => {
 const filterByRooms = (ad) => {
   return (
     housingRooms.value === Default.DEFAULT_VALUE ||
-    ad.offer.rooms == housingRooms.value
+    ad.offer.rooms === Number(housingRooms.value)
   );
 };
 
 const filterByGuests = (ad) => {
   return (
     housingGuests.value === Default.DEFAULT_VALUE ||
-    ad.offer.guests == housingGuests.value
+    ad.offer.guests === Number(housingGuests.value)
   );
 };
 
 const filteredFeatures = (ad) => {
   let featuresElements = [];
   const checkedFeatures = mapFilterForm.querySelectorAll(
-    '#housing-features input:checked',
+    "#housing-features input:checked"
   );
   checkedFeatures.forEach((element) => featuresElements.push(element.value));
   return featuresElements.every((item) => ad.offer.features.includes(item));
