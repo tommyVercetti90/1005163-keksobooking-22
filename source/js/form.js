@@ -159,7 +159,6 @@ const changeMinPrice = (evt) => {
   }
 };
 
-// Действия на изменения количества комнат
 const adFormHandler = () => {
   syncCapacity(offerRooms.value);
   offerRooms.addEventListener("change", formRoomsChangeHandler);
