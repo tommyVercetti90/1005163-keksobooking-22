@@ -1,14 +1,13 @@
-"use strict";
+'use strict';
+const URL = 'https://22.javascript.pages.academy/keksobooking';
 // Получаем данные с сервера и запускаем функцию добавления маркеров на карту
 const getData = () => {
-  return fetch(
-    "https://22.javascript.pages.academy/keksobooking/data"
-  ).then((response) => response.json());
+  return fetch(`${URL}/data`).then((response) => response.json());
 };
 
 const sendData = (formData) => {
-  return fetch("https://22.javascript.pages.academy/keksobooking", {
-    method: "POST",
+  return fetch(`${URL}`, {
+    method: 'POST',
     body: formData,
   });
 };

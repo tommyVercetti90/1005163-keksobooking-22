@@ -78,7 +78,7 @@ fieldset {
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-
+  z-index: 1;
   overflow: hidden;
 }
 

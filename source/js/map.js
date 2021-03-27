@@ -1,51 +1,57 @@
-"use strict";
-import { generateOffer } from "./data.js";
+'use strict';
+import { generateOffer } from './data.js';
 
-const mapForm = document.querySelector(".ad-form");
-const mapFilters = document.querySelector(".map__filters");
-const mapFormElements = mapForm.querySelectorAll("fieldset");
-const mapFilterElements = mapFilters.querySelectorAll("select");
-const mapFilterFeatures = mapFilters.querySelector(".map__features");
-const formAdress = document.querySelector("#address");
+const ICON = {
+  SIZE: [40, 40],
+  ANCHOR: [20, 40],
+};
+const mapForm = document.querySelector('.ad-form');
+const mapFilters = document.querySelector('.map__filters');
+const mapFormElements = mapForm.querySelectorAll('fieldset');
+const mapFilterElements = mapFilters.querySelectorAll('select');
+const mapFilterFeatures = mapFilters.querySelector('.map__features');
+const formAdress = document.querySelector('#address');
+const mapCenterLat = 35.68951;
+const mapCenterLng = 139.69171;
 
 // Меняем свойства главного маркера
 const mainMapMarker = L.icon({
-  iconUrl: "img/main-pin.svg",
-  iconSize: [38, 95],
-  iconAnchor: [22, 94],
+  iconUrl: 'img/main-pin.svg',
+  iconSize: ICON.SIZE,
+  iconAnchor: ICON.ANCHOR,
 });
 
 //  Меняем свойства обычного маркера
 const regularMapMarker = L.icon({
-  iconUrl: "img/pin.svg",
-  iconSize: [38, 95],
-  iconAnchor: [22, 94],
+  iconUrl: 'img/pin.svg',
+  iconSize: ICON.SIZE,
+  iconAnchor: ICON.ANCHOR,
 });
 
 // Присвоили map карту из разметки
-const map = L.map("map-canvas");
+const map = L.map('map-canvas');
 
 // Создаем главную метку на карту
 const mainMarker = L.marker(
   {
-    lat: 35.68712,
-    lng: 139.77099,
+    lat: mapCenterLat,
+    lng: mapCenterLng,
   },
-  { draggable: true, icon: mainMapMarker }
+  { draggable: true, icon: mainMapMarker },
 );
 
 // Функция делает формы неактивными
 const mapBlock = () => {
-  mapForm.classList.add("ad-form--disabled");
-  mapFilters.classList.add("map__filters--disabled");
-  mapFilterFeatures.setAttribute("disabled", "disabled");
+  mapForm.classList.add('ad-form--disabled');
+  mapFilters.classList.add('map__filters--disabled');
+  mapFilterFeatures.setAttribute('disabled', 'disabled');
 
   for (let i = 0; i < mapFormElements.length; i++) {
-    mapFormElements[i].setAttribute("disabled", "disabled");
+    mapFormElements[i].setAttribute('disabled', 'disabled');
   }
 
   for (let i = 0; i < mapFilterElements.length; i++) {
-    mapFilterElements[i].setAttribute("disabled", "disabled");
+    mapFilterElements[i].setAttribute('disabled', 'disabled');
   }
 };
 // Сразу запустили функцию
@@ -53,54 +59,53 @@ mapBlock();
 
 // Функция делает формы активными
 const mapUnBlock = () => {
-  mapForm.classList.remove("ad-form--disabled");
-  mapFilters.classList.remove("map__filters--disabled");
-  mapFilterFeatures.removeAttribute("disabled");
+  mapForm.classList.remove('ad-form--disabled');
+  mapFilters.classList.remove('map__filters--disabled');
+  mapFilterFeatures.removeAttribute('disabled');
 
   for (let i = 0; i < mapFormElements.length; i++) {
-    mapFormElements[i].removeAttribute("disabled");
+    mapFormElements[i].removeAttribute('disabled');
   }
 
   for (let i = 0; i < mapFilterElements.length; i++) {
-    mapFilterElements[i].removeAttribute("disabled");
+    mapFilterElements[i].removeAttribute('disabled');
   }
 };
 
 // По умолчанию на странице вызвана функция mapBlock(), когда карта инициализируется срабатывает функция mapUnBlock()
-map.on("load", () => {
+map.on('load', () => {
   mapUnBlock();
 });
 
 // Добавили координаты отображения карты
 map.setView(
   {
-    lat: 35.68712,
-    lng: 139.77099,
+    lat: mapCenterLat,
+    lng: mapCenterLng,
   },
-  10
+  9,
 );
 
 // Добавили слой с рисунком карты
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
 
-// Автоматическое заполнения поля с координатами по умолчанию
-formAdress.value = mainMarker.getLatLng();
+// Добавляем главную метку на карту
+mainMarker.addTo(map);
 
+formAdress.value = mapCenterLat + ', ' + mapCenterLng;
 // После остановки перемещения маркера, в строку формы передаются координаты метки
-mainMarker.on("moveend", (evt) => {
-  formAdress.value = evt.target.getLatLng();
+mainMarker.on('moveend', (evt) => {
+  const getLatLng = evt.target.getLatLng();
+  const getLat = getLatLng.lat.toFixed(5);
+  const getlng = getLatLng.lng.toFixed(5);
+  formAdress.value = `${getLat}, ${getlng}`;
 });
 
 // Блокируем от ручного редактирования строку с координатами
-formAdress.onfocus = () => {
-  formAdress.setAttribute("readonly", true);
-};
-
-// Добавляем главную метку на карту
-mainMarker.addTo(map);
+formAdress.setAttribute('readonly', 'true');
 
 const markerLayer = L.layerGroup().addTo(map);
 
@@ -115,7 +120,7 @@ const markerMaker = (mapPoints) => {
       },
       {
         icon: regularMapMarker,
-      }
+      },
     );
     regularMarker
       .addTo(markerLayer)
@@ -123,4 +128,11 @@ const markerMaker = (mapPoints) => {
   });
 };
 
-export { mapBlock, mapUnBlock, markerMaker };
+export {
+  mapBlock,
+  mapUnBlock,
+  markerMaker,
+  mapCenterLng,
+  mapCenterLat,
+  mainMarker
+};

@@ -1,51 +1,47 @@
-"use strict";
-const OFFER_PRICE_MIN = 10000;
-const OFFER_PRICE_MAX = 50000;
-const mapFilterForm = document.querySelector(".map__filters");
-const housingType = mapFilterForm.querySelector("#housing-type");
-const housingPrice = mapFilterForm.querySelector("#housing-price");
-const housingRooms = mapFilterForm.querySelector("#housing-rooms");
-const housingGuests = mapFilterForm.querySelector("#housing-guests");
-const Default = {
-  DEFAULT_VALUE: "any",
+'use strict';
+const DEFAULT_VALUE = 'any';
+const priceValueToRange = {
+  low: { min: 0, max: 10000 },
+  middle: { min: 10000, max: 50000 },
+  high: { min: 50000, max: 1000000 },
 };
+const mapFilterForm = document.querySelector('.map__filters');
+const housingType = mapFilterForm.querySelector('#housing-type');
+const housingPrice = mapFilterForm.querySelector('#housing-price');
+const housingRooms = mapFilterForm.querySelector('#housing-rooms');
+const housingGuests = mapFilterForm.querySelector('#housing-guests');
 
 const adFilterFormHandler = (cb) => {
-  mapFilterForm.addEventListener("change", cb);
+  mapFilterForm.addEventListener('change', cb);
 };
 
 const filterByType = (ad) => {
   return (
-    housingType.value === Default.DEFAULT_VALUE ||
-    ad.offer.type === housingType.value
+    housingType.value === DEFAULT_VALUE || ad.offer.type === housingType.value
+  );
+};
+
+const priceInRange = (price) => {
+  return (
+    price >= priceValueToRange[housingPrice.value].min &&
+    price < priceValueToRange[housingPrice.value].max
   );
 };
 
 const filterByPrice = (ad) => {
-  switch (housingPrice.value) {
-    case "middle":
-      return (
-        ad.offer.price >= OFFER_PRICE_MIN && ad.offer.price <= OFFER_PRICE_MAX
-      );
-    case "low":
-      return ad.offer.price < OFFER_PRICE_MIN;
-    case "high":
-      return ad.offer.price > OFFER_PRICE_MAX;
-    default:
-      return true;
-  }
+  return housingPrice.value === DEFAULT_VALUE || priceInRange(ad.offer.price);
 };
 
 const filterByRooms = (ad) => {
   return (
-    housingRooms.value === Default.DEFAULT_VALUE ||
+    housingRooms.value === DEFAULT_VALUE ||
     ad.offer.rooms === Number(housingRooms.value)
   );
 };
 
 const filterByGuests = (ad) => {
   return (
-    housingGuests.value === Default.DEFAULT_VALUE ||
+    housingGuests.value === DEFAULT_VALUE ||
     ad.offer.guests === Number(housingGuests.value)
   );
 };
@@ -53,7 +49,7 @@ const filterByGuests = (ad) => {
 const filteredFeatures = (ad) => {
   let featuresElements = [];
   const checkedFeatures = mapFilterForm.querySelectorAll(
-    "#housing-features input:checked"
+    '#housing-features input:checked',
   );
   checkedFeatures.forEach((element) => featuresElements.push(element.value));
   return featuresElements.every((item) => ad.offer.features.includes(item));

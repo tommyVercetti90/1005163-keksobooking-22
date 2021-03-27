@@ -1,8 +1,8 @@
-"use strict";
-const FILE_TYPES = ["gif", "jpg", "jpeg", "png"];
+'use strict';
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
 const uploadImage = (fileChooser, preview) => {
-  fileChooser.addEventListener("change", () => {
+  fileChooser.addEventListener('change', () => {
     const file = fileChooser.files[0];
     const fileName = file.name.toLowerCase();
     const matches = FILE_TYPES.some((it) => {
@@ -10,11 +10,11 @@ const uploadImage = (fileChooser, preview) => {
     });
     if (matches) {
       const reader = new FileReader();
-      reader.addEventListener("load", () => {
+      reader.addEventListener('load', () => {
         preview.src = reader.result;
       });
       reader.readAsDataURL(file);
-      preview.classList.remove("visually-hidden");
+      preview.classList.remove('visually-hidden');
     }
   });
 };

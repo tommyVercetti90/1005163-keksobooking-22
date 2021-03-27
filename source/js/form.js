@@ -1,135 +1,123 @@
-"use strict";
-import { sendData } from "./backend.js";
-import { showAlertSuccess, showAlertError } from "./alerts.js";
-import { uploadImage } from "./photo.js";
-
-const offerForm = document.querySelector(".ad-form");
-const propertyType = offerForm.querySelector("#type");
-const offerPrice = offerForm.querySelector("#price");
-const checkInTime = offerForm.querySelector("#timein");
-const checkOutTime = offerForm.querySelector("#timeout");
-const offerTitle = offerForm.querySelector("#title");
-const offerRooms = offerForm.querySelector("#room_number");
-const offerCapacityCount = offerForm.querySelector("#capacity");
-const capacitySelectOptions = offerCapacityCount.querySelectorAll("option");
-const resetButton = offerForm.querySelector(".ad-form__reset");
-
-const avatarChooser = document.querySelector(".ad-form-header__input");
-const previewAvatar = document.querySelector(
-  ".ad-form-header__preview__avatar"
-);
-const photoChooser = document.querySelector(".ad-form__input");
-const previewPhoto = document.querySelector(".ad-form__photo__pic");
+'use strict';
+import { sendData } from './backend.js';
+import { showAlertSuccess, showAlertError } from './alerts.js';
+import { uploadImage } from './photo.js';
+import { mapCenterLng, mapCenterLat, mainMarker } from './map.js';
 
 const MIN_NAME_LENGTH = 30;
 const MAX_NAME_LENGTH = 100;
+const typeFlatToPrice = {
+  flat: 1000,
+  bungalow: 0,
+  house: 5000,
+  palace: 10000,
+};
+const roomsToGuests = {
+  1: ['1'],
+  2: ['1', '2'],
+  3: ['1', '2', '3'],
+  100: ['0'],
+};
+
+const offerForm = document.querySelector('.ad-form');
+const propertyType = offerForm.querySelector('#type');
+const typeDefault = propertyType.value;
+const offerAdress = document.querySelector('#address');
+const offerPrice = offerForm.querySelector('#price');
+const priceDefault = offerPrice.placeholder;
+const checkInTime = offerForm.querySelector('#timein');
+const checkOutTime = offerForm.querySelector('#timeout');
+const timeInDefault = checkInTime.value;
+const timeOutDefault = checkOutTime.value;
+const offerTitle = offerForm.querySelector('#title');
+const offerRooms = offerForm.querySelector('#room_number');
+const resetButton = offerForm.querySelector('.ad-form__reset');
+const roomDefault = offerRooms.value;
+const offerCapacityCount = offerForm.querySelector('#capacity');
+const capacityOptions = Array.from(offerCapacityCount.options);
+const capacityDefault = offerCapacityCount.value;
+const featureCheckbox = document.querySelectorAll('.feature__checkbox');
+const offerDescription = document.querySelector('#description');
+const descriptionDefault = offerDescription.value;
+const avatarChooser = document.querySelector('.ad-form-header__input');
+const previewAvatar = document.querySelector(
+  '.ad-form-header__preview__avatar',
+);
+const photoChooser = document.querySelector('.ad-form__input');
+const previewPhoto = document.querySelector('.ad-form__photo__pic');
 
 // Функция валидации заголовка обьявления
-const offerTitleValidation = () => {
+const offerTitleInputHandler = () => {
   const valueLength = offerTitle.value.length;
+
   if (valueLength < MIN_NAME_LENGTH) {
     offerTitle.setCustomValidity(
-      "Введите ещё " + (MIN_NAME_LENGTH - valueLength) + " симв."
+      'Введите ещё ' + (MIN_NAME_LENGTH - valueLength) + ' симв.',
     );
   } else if (valueLength > MAX_NAME_LENGTH) {
     offerTitle.setCustomValidity(
-      "Удалите лишние " + (valueLength - MAX_NAME_LENGTH) + " симв."
+      'Удалите лишние ' + (valueLength - MAX_NAME_LENGTH) + ' симв.',
     );
   } else {
-    offerTitle.setCustomValidity("");
+    offerTitle.setCustomValidity('');
   }
+  offerTitle.reportValidity();
 };
 
-// Функция валидации цены обьявления
-const offerPriceValidation = () => {
-  if (offerPrice.validity.tooLong) {
-    offerPrice.setCustomValidity("Цена не может быть больше 1000000");
-  } else if (offerPrice.validity.valueMissing) {
-    offerPrice.setCustomValidity("Обязательное поле");
-  } else {
-    offerPrice.setCustomValidity("");
-  }
-};
-
-// Функция замены цены в placeholder
-const changeAttributePrice = (price) => {
-  offerPrice.setAttribute("placeholder", price.toString());
-  offerPrice.setAttribute("min", price);
-};
-
-const syncCheckInTime = (evt) => {
+const checkInTimeChangeHandler = (evt) => {
   checkOutTime.value = evt.target.value;
 };
 
-const syncCheckOutTime = (evt) => {
+const checkOutTimeChangeHandler = (evt) => {
   checkInTime.value = evt.target.value;
 };
 
 // Функция сброса аватара
-const resetAvatar = () => {
-  previewAvatar.src = "img/muffin-grey.svg";
-  previewPhoto.src = "";
-  previewPhoto.classList.add("visually-hidden");
-};
-
-// Функция удаления уведомления после успешной отправки формы
-const removeMessage = () => {
-  const temporaryMessage = document.querySelector(".success");
-  temporaryMessage.remove();
+const resetButtonClickHandler = () => {
+  previewAvatar.src = 'img/muffin-grey.svg';
+  previewPhoto.src = '';
+  previewPhoto.classList.add('visually-hidden');
 };
 
 const syncCapacity = (roomNumber) => {
-  capacitySelectOptions.forEach((option) => {
-    const optionValue = Number(option.value);
-    if (optionValue === 0 && roomNumber === 100) {
-      option.removeAttribute("disabled");
-    } else if (
-      optionValue <= roomNumber &&
-      optionValue !== 0 &&
-      roomNumber !== 100
-    ) {
-      option.removeAttribute("disabled");
-    } else {
-      option.setAttribute("disabled", true);
-    }
+  capacityOptions.forEach((option) => {
+    option.hidden = !roomsToGuests[roomNumber].includes(option.value);
+    option.selected = !option.hidden;
   });
 };
 
-const formRoomsChangeHandler = (roomNumberSelect) => {
+const offerRoomsChangeHandler = (roomNumberSelect) => {
   const roomNumber = Number(roomNumberSelect.target.value);
   syncCapacity(roomNumber);
-  checkRooms();
 };
 
-const checkRooms = () => {
-  const rooms = Number(offerRooms.value);
-  const places = Number(offerCapacityCount.value);
-
-  if (rooms === 100 && places !== 0) {
-    offerCapacityCount.setCustomValidity(
-      "Нужно выбрать количество мест: не для гостей"
-    );
-  } else if (
-    (rooms !== 100 && places === 0) ||
-    (rooms < places && places !== 0)
-  ) {
-    offerCapacityCount.setCustomValidity(
-      "Нужно выбрать количество мест в соответствии количеству комнат"
-    );
-  } else {
-    offerCapacityCount.setCustomValidity("");
-  }
+const formSuccess = () => {
+  offerTitle.value = '';
+  offerAdress.value = mapCenterLat + ', ' + mapCenterLng;
+  propertyType.value = typeDefault;
+  offerPrice.placeholder = priceDefault;
+  offerPrice.min = priceDefault;
+  offerPrice.value = '';
+  checkInTime.value = timeInDefault;
+  checkOutTime.value = timeOutDefault;
+  offerRooms.value = roomDefault;
+  offerCapacityCount.value = capacityDefault;
+  featureCheckbox.forEach((element) => {
+    element.checked = false;
+  });
+  offerDescription.value = descriptionDefault;
+  mainMarker.setLatLng({ lat: mapCenterLat, lng: mapCenterLng });
+  resetButtonClickHandler();
+  showAlertSuccess();
 };
 
-const checkData = (evt) => {
+const offerFormSubmitHandler = (evt) => {
+  evt.preventDefault();
   const formData = new FormData(evt.target);
   sendData(formData)
     .then((response) => {
       if (response.ok) {
-        showAlertSuccess();
-        setTimeout(removeMessage, 2000);
-        resetButton.click();
-        resetAvatar();
+        formSuccess();
       } else {
         showAlertError();
       }
@@ -139,45 +127,29 @@ const checkData = (evt) => {
     });
 };
 
-const changeMinPrice = (evt) => {
-  switch (evt.target.value) {
-    case "bungalow":
-      changeAttributePrice(0);
-      break;
-    case "flat":
-      changeAttributePrice(1000);
-      break;
-    case "house":
-      changeAttributePrice(5000);
-      break;
-    case "palace":
-      changeAttributePrice(10000);
-      break;
-    default:
-      changeAttributePrice(1000);
-      break;
-  }
+// Функция замены цены в placeholder
+const propertyTypeChangeHandler = (evt) => {
+  offerPrice.min = typeFlatToPrice[evt.target.value];
+  offerPrice.placeholder = typeFlatToPrice[evt.target.value];
 };
 
-const adFormHandler = () => {
+const offerPriceInputHandler = () => {
+  offerPrice.reportValidity();
+};
+
+const initializeForm = () => {
   syncCapacity(offerRooms.value);
-  offerRooms.addEventListener("change", formRoomsChangeHandler);
-  offerCapacityCount.addEventListener("change", checkRooms);
-  propertyType.addEventListener("change", (evt) => {
-    changeMinPrice(evt);
-  });
-  offerTitle.addEventListener("invalid", offerTitleValidation);
-  offerPrice.addEventListener("invalid", offerPriceValidation);
-  checkInTime.addEventListener("change", syncCheckInTime);
-  checkOutTime.addEventListener("change", syncCheckOutTime);
-  resetButton.addEventListener("click", resetAvatar);
-  offerForm.addEventListener("submit", (evt) => {
-    evt.preventDefault();
-    checkData(evt);
-  });
+  offerRooms.addEventListener('change', offerRoomsChangeHandler);
+  propertyType.addEventListener('change', propertyTypeChangeHandler);
+  offerTitle.addEventListener('input', offerTitleInputHandler);
+  offerPrice.addEventListener('input', offerPriceInputHandler);
+  resetButton.addEventListener('click', resetButtonClickHandler);
+  checkInTime.addEventListener('change', checkInTimeChangeHandler);
+  checkOutTime.addEventListener('change', checkOutTimeChangeHandler);
+  offerForm.addEventListener('submit', offerFormSubmitHandler);
 };
 
 uploadImage(avatarChooser, previewAvatar);
 uploadImage(photoChooser, previewPhoto);
 
-export { adFormHandler, resetButton, removeMessage };
+export { initializeForm };
